@@ -3,12 +3,12 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import MovementComponentTest from './components/MovementComponentTest';
 import SoundComponentTest from './components/SoundComponentTest';
+import CallStatusComponentTest from './components/CallStatusComponentTest';
 
 const App = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <MovementComponentTest />
-      <SoundComponentTest />
+      <CallStatusComponentTest />
     </SafeAreaView>
   );
 };
