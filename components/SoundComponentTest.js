@@ -1,10 +1,8 @@
 // components/SoundComponentTest.js
 import React, {useState, useEffect} from 'react';
 import {View, Text, Button, PermissionsAndroid, Platform} from 'react-native';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import Sound from 'react-native-sound-level';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-
-const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const SoundComponentTest = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -13,8 +11,7 @@ const SoundComponentTest = () => {
   useEffect(() => {
     // Cleanup on component unmount
     return () => {
-      audioRecorderPlayer.stopRecorder();
-      audioRecorderPlayer.removeRecordBackListener();
+      Sound.stop();
     };
   }, []);
 
@@ -24,7 +21,8 @@ const SoundComponentTest = () => {
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         {
           title: 'Microphone Permission',
-          message: 'App needs access to your microphone to record audio.',
+          message:
+            'App needs access to your microphone to detect sound levels.',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -52,23 +50,18 @@ const SoundComponentTest = () => {
     if (!hasPermission) return;
 
     setIsRecording(true);
-    const result = await audioRecorderPlayer.startRecorder();
-    console.log(result); // Log the recorder start result
-
-    audioRecorderPlayer.addRecordBackListener(e => {
-      console.log('Recording: ', e); // Log the entire event object
-
-      // Using currentPosition as a placeholder for sound level
-      setSoundLevel(Math.random() * 100); // Mock sound level for demonstration
-      return;
-    });
+    Sound.start();
+    Sound.onNewFrame = data => {
+      console.log('Sound level data: ', data);
+      if (data && data.value !== undefined) {
+        setSoundLevel(data.value); // Use the actual sound level
+      }
+    };
   };
 
-  const stopRecording = async () => {
+  const stopRecording = () => {
     setIsRecording(false);
-    const result = await audioRecorderPlayer.stopRecorder();
-    audioRecorderPlayer.removeRecordBackListener();
-    console.log(result); // Log the recorder stop result
+    Sound.stop();
   };
 
   return (
