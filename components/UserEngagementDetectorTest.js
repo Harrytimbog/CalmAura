@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, AppState} from 'react-native';
+import checkIfPhoneIsLocked from './PhoneLockStatus';
 
 const UserEngagementDetectorTest = () => {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -7,7 +8,7 @@ const UserEngagementDetectorTest = () => {
   const [isPhoneLocked, setIsPhoneLocked] = useState(false);
 
   useEffect(() => {
-    const handleAppStateChange = nextAppState => {
+    const handleAppStateChange = async nextAppState => {
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
         console.log('App has come to the foreground!');
         setUserEngaged(false);
@@ -19,16 +20,12 @@ const UserEngagementDetectorTest = () => {
         setUserEngaged(true);
       } else if (nextAppState === 'background') {
         console.log('App has gone to the background!');
-        setIsPhoneLocked(checkIfPhoneIsLocked());
-        setUserEngaged(!checkIfPhoneIsLocked());
+        const locked = await checkIfPhoneIsLocked();
+        console.log(`Phone is locked: ${locked}`);
+        setIsPhoneLocked(locked);
+        setUserEngaged(!locked);
       }
       setAppState(nextAppState);
-    };
-
-    const checkIfPhoneIsLocked = () => {
-      // This is a placeholder for the actual implementation to detect phone lock
-      // The actual implementation depends on the capabilities of the libraries you are using
-      return false; // Return true if phone is locked, false otherwise
     };
 
     const subscription = AppState.addEventListener(
