@@ -6,12 +6,13 @@ import SoundComponentTest from './components/SoundComponentTest';
 import CallStatusComponentTest from './components/CallStatusComponentTest';
 import BackgroundMusicComponentTest from './components/BackgroundMusicComponentTest';
 import UserEngagementDetectorTest from './components/UserEngagementDetectorTest';
+// import CameraUsageTestComponent from './components/CameraUsageTestComponent';
 // import BackgroundMusicComponentTest from './components/BackgroundMusicComponentTest';
 
 const App = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <UserEngagementDetectorTest />
+      <MovementComponentTest />
     </SafeAreaView>
   );
 };
