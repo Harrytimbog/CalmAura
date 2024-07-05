@@ -1,33 +1,29 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, AppState} from 'react-native';
 import checkIfPhoneIsLocked from './PhoneLockStatus';
 
-const UserEngagementDetectorTest = () => {
+const UserEngagementDetectorTest = ({setUserEngagement}) => {
   const [appState, setAppState] = useState(AppState.currentState);
-  const [userEngaged, setUserEngaged] = useState(false);
   const [isPhoneLocked, setIsPhoneLocked] = useState(false);
 
-  useEffect(() => {
-    const handleAppStateChange = async nextAppState => {
+  const handleAppStateChange = useCallback(
+    async nextAppState => {
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        console.log('App has come to the foreground!');
-        setUserEngaged(false);
+        setUserEngagement(false);
         setIsPhoneLocked(false);
       } else if (nextAppState === 'inactive') {
-        console.log(
-          'App is inactive (possibly during phone call or other transient state)',
-        );
-        setUserEngaged(true);
+        setUserEngagement(true);
       } else if (nextAppState === 'background') {
-        console.log('App has gone to the background!');
         const locked = await checkIfPhoneIsLocked();
-        console.log(`Phone is locked: ${locked}`);
         setIsPhoneLocked(locked);
-        setUserEngaged(!locked);
+        setUserEngagement(!locked);
       }
       setAppState(nextAppState);
-    };
+    },
+    [appState, setUserEngagement],
+  );
 
+  useEffect(() => {
     const subscription = AppState.addEventListener(
       'change',
       handleAppStateChange,
@@ -36,17 +32,14 @@ const UserEngagementDetectorTest = () => {
     return () => {
       subscription.remove();
     };
-  }, [appState]);
+  }, [handleAppStateChange]);
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>
         User Engagement Status:{' '}
-        {userEngaged
-          ? 'User is Engaged in other activities'
-          : 'User is focused on the app'}
+        {isPhoneLocked ? 'Phone is locked' : 'User is focused on the app'}
       </Text>
-      {isPhoneLocked && <Text>Phone is locked</Text>}
     </View>
   );
 };

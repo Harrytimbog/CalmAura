@@ -1,28 +1,21 @@
 // App.js
 import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import MovementComponentTest from './components/MovementComponentTest';
-import SoundComponentTest from './components/SoundComponentTest';
-import CallStatusComponentTest from './components/CallStatusComponentTest';
-import BackgroundMusicComponentTest from './components/BackgroundMusicComponentTest';
-import UserEngagementDetectorTest from './components/UserEngagementDetectorTest';
-// import CameraUsageTestComponent from './components/CameraUsageTestComponent';
-// import BackgroundMusicComponentTest from './components/BackgroundMusicComponentTest';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import HomeScreen from './screens/HomeScreen';
+import MonitoringScreen from './screens/MonitoringScreen';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <MovementComponentTest />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Monitoring" component={MonitoringScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;
