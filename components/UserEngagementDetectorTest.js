@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, AppState} from 'react-native';
+import {View, Text, AppState, StyleSheet} from 'react-native';
 import checkIfPhoneIsLocked from './PhoneLockStatus';
 
 const UserEngagementDetectorTest = ({setUserEngagement}) => {
@@ -35,13 +35,26 @@ const UserEngagementDetectorTest = ({setUserEngagement}) => {
   }, [handleAppStateChange]);
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>
         User Engagement Status:{' '}
         {isPhoneLocked ? 'Phone is locked' : 'User is focused on the app'}
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#333', // Dark color for better visibility
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default UserEngagementDetectorTest;

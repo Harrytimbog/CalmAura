@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, PermissionsAndroid, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+} from 'react-native';
 import CallDetectorManager from 'react-native-call-detection';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
@@ -35,47 +41,75 @@ const CallStatusComponentTest = ({setCallStatus}) => {
 
     const startCallDetection = async () => {
       const hasPermission = await requestPermission();
-      if (!hasPermission) return;
+      if (!hasPermission) {
+        console.log('Permission denied for phone state');
+        return;
+      }
 
-      const detector = new CallDetectorManager((event, number) => {
-        let statusMessage = 'No call detected';
-        switch (event) {
-          case 'Incoming':
-            statusMessage = 'Incoming call from ' + number;
-            break;
-          case 'Offhook':
-            statusMessage = 'Call active (Offhook)';
-            break;
-          case 'Missed':
-            statusMessage = 'Missed call from ' + number;
-            break;
-          case 'Disconnected':
-            statusMessage = 'Call disconnected';
-            break;
-          default:
-            statusMessage = 'Unknown call event';
-        }
-        setLocalCallStatus(statusMessage);
-        setCallStatus(statusMessage !== 'No call detected');
-      }, true);
+      // console.log('Starting call detection');
+      try {
+        const detector = new CallDetectorManager((event, number) => {
+          console.log(`Call event: ${event}, number: ${number}`);
+          let statusMessage = 'No call detected';
+          switch (event) {
+            case 'Incoming':
+              statusMessage = 'Incoming call from ' + number;
+              break;
+            case 'Offhook':
+              statusMessage = 'Call active (Offhook)';
+              break;
+            case 'Missed':
+              statusMessage = 'Missed call from ' + number;
+              break;
+            case 'Disconnected':
+              statusMessage = 'Call disconnected';
+              break;
+            default:
+              statusMessage = 'Unknown call event';
+          }
+          setLocalCallStatus(statusMessage);
+          setCallStatus(statusMessage !== 'No call detected');
+        }, true);
 
-      setCallDetector(detector);
+        setCallDetector(detector);
+      } catch (error) {
+        console.error('Error starting call detection:', error);
+      }
     };
 
     startCallDetection(); // Start detection on mount
 
     return () => {
       if (callDetector) {
-        callDetector.dispose();
+        // console.log('Disposing call detector');
+        try {
+          callDetector.dispose();
+          // console.log('Call detector disposed');
+        } catch (error) {
+          console.error('Error disposing call detector:', error);
+        }
       }
     };
-  }, [callDetector, setCallStatus]);
+  }, [setCallStatus, callDetector]);
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Call Status: {callStatus}</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Call Status: {callStatus}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#333', // Dark color for better visibility
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default CallStatusComponentTest;

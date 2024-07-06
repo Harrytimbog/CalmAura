@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, PermissionsAndroid, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+} from 'react-native';
 import Sound from 'react-native-sound-level';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
@@ -57,10 +63,23 @@ const SoundComponentTest = ({setSound}) => {
   }, [setSound]);
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Sound Level: {soundLevel.toFixed(2)} dB</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Sound Level: {soundLevel.toFixed(2)} dB</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#333', // Dark color for better visibility
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default SoundComponentTest;

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {
   accelerometer,
   setUpdateIntervalForType,
@@ -27,13 +27,26 @@ const MovementComponentTest = ({setMovement}) => {
   }, [setMovement]);
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Acceleration Data:</Text>
-      <Text>X: {data.x.toFixed(2)}</Text>
-      <Text>Y: {data.y.toFixed(2)}</Text>
-      <Text>Z: {data.z.toFixed(2)}</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Acceleration Data:</Text>
+      <Text style={styles.text}>X: {data.x.toFixed(2)}</Text>
+      <Text style={styles.text}>Y: {data.y.toFixed(2)}</Text>
+      <Text style={styles.text}>Z: {data.z.toFixed(2)}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#333', // Dark color for better visibility
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default MovementComponentTest;
