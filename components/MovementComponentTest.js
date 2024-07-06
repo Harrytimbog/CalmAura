@@ -8,14 +8,27 @@ import {
 
 const MovementComponentTest = ({setMovement}) => {
   const [data, setData] = useState({x: 0, y: 0, z: 0});
+  const [previousData, setPreviousData] = useState({x: 0, y: 0, z: 0});
+  const movementThreshold = 2; // Adjust the threshold for significant movement
+  const rateThreshold = 0.5; // Adjust the rate of change threshold
 
   useEffect(() => {
     setUpdateIntervalForType(SensorTypes.accelerometer, 100); // set update interval to 100ms
     const subscription = accelerometer.subscribe(
       ({x, y, z}) => {
         setData({x, y, z});
-        // Assuming that significant movement is when any of the values exceed a threshold
-        const isMoving = Math.abs(x) > 1 || Math.abs(y) > 1 || Math.abs(z) > 1;
+
+        // Calculate the rate of change in acceleration
+        const dx = Math.abs(x - previousData.x);
+        const dy = Math.abs(y - previousData.y);
+        const dz = Math.abs(z - previousData.z);
+
+        // Update previous data
+        setPreviousData({x, y, z});
+
+        // Check for significant movement
+        const isMoving =
+          dx > rateThreshold || dy > rateThreshold || dz > rateThreshold;
         setMovement(isMoving);
       },
       error => console.error('The sensor is not available', error),
@@ -24,7 +37,7 @@ const MovementComponentTest = ({setMovement}) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setMovement]);
+  }, [previousData, setMovement]);
 
   return (
     <View style={styles.container}>
