@@ -46,10 +46,8 @@ const CallStatusComponentTest = ({setCallStatus}) => {
         return;
       }
 
-      // console.log('Starting call detection');
       try {
         const detector = new CallDetectorManager((event, number) => {
-          console.log(`Call event: ${event}, number: ${number}`);
           let statusMessage = 'No call detected';
           switch (event) {
             case 'Incoming':
@@ -81,10 +79,8 @@ const CallStatusComponentTest = ({setCallStatus}) => {
 
     return () => {
       if (callDetector) {
-        // console.log('Disposing call detector');
         try {
           callDetector.dispose();
-          // console.log('Call detector disposed');
         } catch (error) {
           console.error('Error disposing call detector:', error);
         }

@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View, Text, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import UserEngagementDetectorTest from '../components/UserEngagementDetectorTest';
-import CameraUsageTestComponent from '../components/CameraUsageTestComponent';
 import CallStatusComponentTest from '../components/CallStatusComponentTest';
 import BackgroundMusicComponentTest from '../components/BackgroundMusicComponentTest';
 import MovementComponentTest from '../components/MovementComponentTest';
@@ -18,25 +17,42 @@ const MonitoringScreen = () => {
   const [sound, setSound] = useState(false);
   const [dangerLevel, setDangerLevel] = useState(0);
 
-  useEffect(() => {
-    const updateDangerLevel = () => {
-      let level = 0;
-      if (userEngagement) level += 1;
-      if (backgroundMusic) level += 1;
-      if (callStatus) level += 1;
-      if (movement) level += 1;
-      if (sound) level += 1;
-      setDangerLevel(level);
-    };
-
-    updateDangerLevel();
+  const updateDangerLevel = useCallback(() => {
+    let level = 0;
+    if (userEngagement) level += 1;
+    if (backgroundMusic) level += 1;
+    if (callStatus) level += 1;
+    if (movement) level += 1;
+    if (sound) level += 1;
+    setDangerLevel(level);
+    console.log('Updated Danger Level:', level); // Log the danger level
   }, [userEngagement, backgroundMusic, callStatus, movement, sound]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      updateDangerLevel();
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [updateDangerLevel]);
 
   useEffect(() => {
     if (dangerLevel >= 3) {
       alert('Danger! Too many tasks at the same time!');
     }
+    console.log('Current Danger Level:', dangerLevel); // Log the current danger level
   }, [dangerLevel]);
+
+  useEffect(() => {
+    updateDangerLevel();
+  }, [
+    userEngagement,
+    backgroundMusic,
+    callStatus,
+    movement,
+    sound,
+    updateDangerLevel,
+  ]);
 
   const data = [
     {
@@ -64,7 +80,9 @@ const MonitoringScreen = () => {
       <CallStatusComponentTest setCallStatus={setCallStatus} />
       <MovementComponentTest setMovement={setMovement} />
       <SoundComponentTest setSound={setSound} />
-      <Text style={styles.dangerText}>Danger Level: {dangerLevel}</Text>
+      <Text style={[styles.dangerText, {marginBottom: 20}]}>
+        Danger Level: {dangerLevel}
+      </Text>
       <View style={styles.chartContainer}>
         <Svg height="320" width={screenWidth - 20}>
           {data.map((item, index) => (
@@ -97,7 +115,7 @@ const MonitoringScreen = () => {
           ))}
         </Svg>
       </View>
-      <View style={styles.legendContainer}>
+      <View style={[styles.legendContainer, {marginBottom: 20}]}>
         {data.map((item, index) => (
           <View key={index} style={styles.legendItem}>
             <View style={[styles.legendColor, {backgroundColor: item.color}]} />
@@ -127,7 +145,6 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
-    marginBottom: 20, // Added marginBottom
   },
   chartContainer: {
     alignItems: 'center',
@@ -143,7 +160,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap', // Allow legend items to wrap to multiple lines
     justifyContent: 'center',
     marginTop: 20,
-    marginBottom: 20, // Added marginBottom
   },
   legendItem: {
     flexDirection: 'row',

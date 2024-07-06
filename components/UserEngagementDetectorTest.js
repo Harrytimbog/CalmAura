@@ -8,7 +8,7 @@ const UserEngagementDetectorTest = ({setUserEngagement}) => {
 
   const handleAppStateChange = useCallback(
     async nextAppState => {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      if (nextAppState === 'active') {
         setUserEngagement(false);
         setIsPhoneLocked(false);
       } else if (nextAppState === 'inactive') {
@@ -20,7 +20,7 @@ const UserEngagementDetectorTest = ({setUserEngagement}) => {
       }
       setAppState(nextAppState);
     },
-    [appState, setUserEngagement],
+    [setUserEngagement],
   );
 
   useEffect(() => {

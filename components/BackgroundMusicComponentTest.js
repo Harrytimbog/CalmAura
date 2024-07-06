@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, NativeModules, StyleSheet} from 'react-native';
+import {View, Text, NativeModules} from 'react-native';
 
 const {AudioFocusModule} = NativeModules;
 
@@ -14,29 +14,21 @@ const BackgroundMusicComponentTest = ({setBackgroundMusic}) => {
   }, [setBackgroundMusic]);
 
   useEffect(() => {
-    checkIfMusicPlaying(); // Trigger detection on mount
+    checkIfMusicPlaying();
+    const intervalId = setInterval(() => {
+      checkIfMusicPlaying();
+    }, 1000); // Check every second
+
+    return () => clearInterval(intervalId);
   }, [checkIfMusicPlaying]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text style={{color: '#333'}}>
         Is Music Playing: {isMusicPlaying ? 'Yes' : 'No'}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#333', // Dark color for better visibility
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default BackgroundMusicComponentTest;
