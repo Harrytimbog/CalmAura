@@ -13,6 +13,8 @@ const SoundComponentTest = ({setSound}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [soundLevel, setSoundLevel] = useState(-100); // Default to a very low value
   const soundThreshold = -30; // Define a threshold for significant sound detection
+  const maxSoundLevel = 0; // Max sound level observed
+  const minSoundLevel = -100; // Min sound level observed
 
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
@@ -39,6 +41,15 @@ const SoundComponentTest = ({setSound}) => {
     return false;
   };
 
+  const normalizeSoundLevel = useCallback(
+    level => {
+      if (level < minSoundLevel) level = minSoundLevel;
+      if (level > maxSoundLevel) level = maxSoundLevel;
+      return (level - minSoundLevel) / (maxSoundLevel - minSoundLevel);
+    },
+    [minSoundLevel, maxSoundLevel],
+  );
+
   const startRecording = useCallback(async () => {
     const hasPermission = await requestPermission();
     if (!hasPermission) return;
@@ -47,15 +58,12 @@ const SoundComponentTest = ({setSound}) => {
     Sound.start();
     Sound.onNewFrame = data => {
       if (data && data.value !== undefined) {
+        const normalizedLevel = normalizeSoundLevel(data.value);
         setSoundLevel(data.value); // Use the actual sound level
-        if (data.value > soundThreshold) {
-          setSound(true);
-        } else {
-          setSound(false);
-        }
+        setSound(normalizedLevel);
       }
     };
-  }, [setSound, soundThreshold]);
+  }, [setSound, normalizeSoundLevel]);
 
   useEffect(() => {
     startRecording(); // Start recording on mount
@@ -63,7 +71,7 @@ const SoundComponentTest = ({setSound}) => {
     return () => {
       setIsRecording(false);
       Sound.stop();
-      setSound(false);
+      setSound(0);
     };
   }, [startRecording, setSound]);
 

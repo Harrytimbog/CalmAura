@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {
   accelerometer,
@@ -9,8 +9,15 @@ import {
 const MovementComponentTest = ({setMovement}) => {
   const [data, setData] = useState({x: 0, y: 0, z: 0});
   const [previousData, setPreviousData] = useState({x: 0, y: 0, z: 0});
-  const movementThreshold = 2; // Adjust the threshold for significant movement
-  const rateThreshold = 0.5; // Adjust the rate of change threshold
+
+  const rateThresholds = useMemo(
+    () => ({
+      low: 0.5,
+      medium: 1.5,
+      high: 2.5,
+    }),
+    [],
+  );
 
   useEffect(() => {
     setUpdateIntervalForType(SensorTypes.accelerometer, 100); // set update interval to 100ms
@@ -26,10 +33,30 @@ const MovementComponentTest = ({setMovement}) => {
         // Update previous data
         setPreviousData({x, y, z});
 
-        // Check for significant movement
-        const isMoving =
-          dx > rateThreshold || dy > rateThreshold || dz > rateThreshold;
-        setMovement(isMoving);
+        // Check for significant movement and normalize the value
+        let movementIntensity = 0;
+
+        if (
+          dx > rateThresholds.high ||
+          dy > rateThresholds.high ||
+          dz > rateThresholds.high
+        ) {
+          movementIntensity = 1; // High intensity
+        } else if (
+          dx > rateThresholds.medium ||
+          dy > rateThresholds.medium ||
+          dz > rateThresholds.medium
+        ) {
+          movementIntensity = 0.7; // Medium intensity
+        } else if (
+          dx > rateThresholds.low ||
+          dy > rateThresholds.low ||
+          dz > rateThresholds.low
+        ) {
+          movementIntensity = 0.4; // Low intensity
+        }
+
+        setMovement(movementIntensity);
       },
       error => console.error('The sensor is not available', error),
     );
@@ -37,7 +64,7 @@ const MovementComponentTest = ({setMovement}) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [previousData, setMovement]);
+  }, [previousData, setMovement, rateThresholds]);
 
   return (
     <View style={styles.container}>
