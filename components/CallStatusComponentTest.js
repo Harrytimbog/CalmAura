@@ -1,3 +1,5 @@
+import {faPhone} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -90,7 +92,13 @@ const CallStatusComponentTest = ({setCallStatus}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Call Status: {callStatus}</Text>
+      <View style={styles.iconWrapper}>
+        <FontAwesomeIcon icon={faPhone} size={16} color="#900" />
+      </View>
+      <View>
+        <Text style={styles.secondaryText}>Call Status</Text>
+        <Text style={styles.primaryText}>{callStatus}</Text>
+      </View>
     </View>
   );
 };
@@ -100,10 +108,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    backgroundColor: '#d3d3d3',
+    opacity: 0.5,
+    padding: 20,
   },
-  text: {
-    color: '#333', // Dark color for better visibility
+  iconWrapper: {
+    backgroundColor: '#a9a9a9',
+    padding: 5,
+    borderRadius: 3,
+  },
+  secondaryText: {
+    color: '#900', // Dark color for better visibility
+    fontSize: 8,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  primaryText: {
+    color: '#900', // Dark color for better visibility
     fontSize: 16,
+    textTransform: 'uppercase',
     fontWeight: 'bold',
   },
 });

@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import Sound from 'react-native-sound-level';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {faMicrophone} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
 const SoundComponentTest = ({setSound}) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -77,10 +79,17 @@ const SoundComponentTest = ({setSound}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Sound Level: {soundLevel.toFixed(2)} dB</Text>
-      <Text style={styles.text}>
-        Sound Detected: {soundLevel > soundThreshold ? 'Yes' : 'No'}
-      </Text>
+      <View style={styles.iconWrapper}>
+        <FontAwesomeIcon icon={faMicrophone} size={16} color="#900" />
+      </View>
+      <View>
+        <Text style={styles.secondaryText}>
+          Sound Detected: {soundLevel > soundThreshold ? 'Yes' : 'No'}
+        </Text>
+        <Text style={styles.primaryText}>
+          Sound Level: {soundLevel.toFixed(2)} dB
+        </Text>
+      </View>
     </View>
   );
 };
@@ -90,10 +99,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    backgroundColor: '#d3d3d3',
+    opacity: 0.5,
+    padding: 20,
   },
-  text: {
-    color: '#333', // Dark color for better visibility
-    fontSize: 16,
+  iconWrapper: {
+    backgroundColor: '#a9a9a9',
+    padding: 5,
+    borderRadius: 3,
+  },
+  secondaryText: {
+    color: '#900', // Dark color for better visibility
+    fontSize: 8,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  primaryText: {
+    color: '#900', // Dark color for better visibility
+    fontSize: 14,
+    textTransform: 'uppercase',
     fontWeight: 'bold',
   },
 });

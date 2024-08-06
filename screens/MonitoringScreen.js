@@ -19,9 +19,9 @@ import HapticFeedback from 'react-native-haptic-feedback';
 const screenWidth = Dimensions.get('window').width;
 
 const maxWeights = {
-  userEngagement: 0.25, // 25%
+  userEngagement: 0.3, // 30%
   backgroundMusic: 0.1, // 10%
-  callStatus: 0.3, // 30%
+  callStatus: 0.25, // 25%
   movement: 0.15, // 15%
   sound: 0.2, // 20%
 };
@@ -68,7 +68,7 @@ const MonitoringScreen = () => {
     if (dangerLevel >= 0.5) {
       playHapticFeedback();
     }
-    if (dangerLevel >= 0.75) {
+    if (dangerLevel >= 0.5) {
       Alert.alert('Danger!', 'Too many tasks at the same time!');
     }
     console.log('Current Danger Level:', dangerLevel); // Log the current danger level
@@ -118,11 +118,15 @@ const MonitoringScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Monitoring</Text>
-      <UserEngagementDetectorTest setUserEngagement={setUserEngagement} />
-      <BackgroundMusicComponentTest setBackgroundMusic={setBackgroundMusic} />
-      <CallStatusComponentTest setCallStatus={setCallStatus} />
-      <MovementComponentTest setMovement={setMovement} />
-      <SoundComponentTest setSound={setSoundLevel} />
+      <View style={styles.displayCard}>
+        <UserEngagementDetectorTest setUserEngagement={setUserEngagement} />
+        <BackgroundMusicComponentTest setBackgroundMusic={setBackgroundMusic} />
+        <View style={styles.twinCard}>
+          <CallStatusComponentTest setCallStatus={setCallStatus} />
+          <SoundComponentTest setSound={setSoundLevel} />
+        </View>
+        <MovementComponentTest setMovement={setMovement} />
+      </View>
       <Text style={[styles.dangerText, {marginBottom: 20}]}>
         Danger Level: {(dangerLevel * 100).toFixed(2)}%
       </Text>
@@ -177,11 +181,23 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#f0f0f0', // Added background color for better readability
   },
+  displayCard: {
+    // borderWidth: 2,
+    // borderColor: '#000',
+    // borderRadius: 10,
+    padding: 16,
+  },
+  twinCard: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   title: {
     fontSize: 24,
-    textAlign: 'center',
+    textAlign: 'left',
+    marginLeft: 16,
     marginBottom: 20,
-    color: '#333', // Dark color for better visibility
+    color: '#666666',
+    fontWeight: 'bold',
   },
   dangerText: {
     fontSize: 18,

@@ -10,6 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-native-fontawesome": "^0.3.2",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.4.0",
     "react": "18.2.0",
@@ -28,7 +31,8 @@
     "react-native-sound": "^0.11.2",
     "react-native-sound-level": "^1.2.0",
     "react-native-svg": "^12.1.1",
-    "react-native-svg-charts": "^5.4.0"
+    "react-native-svg-charts": "^5.4.0",
+    "react-native-vector-icons": "^10.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
