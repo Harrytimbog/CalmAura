@@ -77,13 +77,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   primaryText: {
-    color: '#900', // Dark color for better visibility
+    color: 'black', // Dark color for better visibility
     fontSize: 16,
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
   text: {
-    color: '#900',
+    // color: '#900',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },

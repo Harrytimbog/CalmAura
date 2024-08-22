@@ -6,40 +6,63 @@ import {
   ScrollView,
   Dimensions,
   Alert,
-  Platform,
+  Button,
+  TouchableOpacity,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserEngagementDetectorTest from '../components/UserEngagementDetectorTest';
 import CallStatusComponentTest from '../components/CallStatusComponentTest';
 import BackgroundMusicComponentTest from '../components/BackgroundMusicComponentTest';
 import MovementComponentTest from '../components/MovementComponentTest';
 import SoundComponentTest from '../components/SoundComponentTest';
-import {Svg, Rect, Text as SVGText, G} from 'react-native-svg';
+import Svg, {Rect, Text as SVGText, G} from 'react-native-svg';
 import HapticFeedback from 'react-native-haptic-feedback';
+import uuid from 'react-native-uuid';
+import axios from 'axios';
+import AnalogueClock from '../components/Clock';
+import DigitalClock from '../components/DigitalClock';
 
 const screenWidth = Dimensions.get('window').width;
 
 const maxWeights = {
-  userEngagement: 0.3, // 30%
-  backgroundMusic: 0.1, // 10%
-  callStatus: 0.25, // 25%
-  movement: 0.15, // 15%
-  sound: 0.2, // 20%
+  userEngagement: 0.3,
+  backgroundMusic: 0.1,
+  callStatus: 0.25,
+  movement: 0.15,
+  sound: 0.2,
 };
 
 const MonitoringScreen = () => {
   const [userEngagement, setUserEngagement] = useState(false);
   const [backgroundMusic, setBackgroundMusic] = useState(false);
   const [callStatus, setCallStatus] = useState(false);
-  const [movement, setMovement] = useState(0); // Changed to normalized value
-  const [soundLevel, setSoundLevel] = useState(0); // Normalized sound level
+  const [movement, setMovement] = useState(0);
+  const [soundLevel, setSoundLevel] = useState(0);
   const [dangerLevel, setDangerLevel] = useState(0);
+  const [sessionId, setSessionId] = useState(null);
+  const [userId, setUserId] = useState(null); // State for userId
+
+  // Generate a unique user ID or retrieve the existing one
+  const getUserId = async () => {
+    let id = await AsyncStorage.getItem('userId');
+    if (!id) {
+      id = uuid.v4();
+      await AsyncStorage.setItem('userId', id);
+    }
+    setUserId(id);
+  };
+
+  useEffect(() => {
+    getUserId(); // Retrieve or generate userId when the app starts
+  }, []);
+
+  // Function to play haptic feedback
 
   const playHapticFeedback = useCallback(() => {
     const options = {
       enableVibrateFallback: true,
       ignoreAndroidSystemSettings: false,
     };
-
     HapticFeedback.trigger('notificationWarning', options);
   }, []);
 
@@ -53,25 +76,69 @@ const MonitoringScreen = () => {
     level += soundLevel * maxWeights.sound;
 
     setDangerLevel(level);
-    console.log('Updated Danger Level:', level); // Log the danger level
+    console.log('Updated Danger Level:', level);
   }, [userEngagement, backgroundMusic, callStatus, movement, soundLevel]);
+
+  const startMonitoring = () => {
+    setSessionId(uuid.v4()); // Generate a new session ID
+  };
+
+  const stopMonitoring = () => {
+    setSessionId(null);
+  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       updateDangerLevel();
-    }, 1000); // Update every second
+    }, 1000);
 
     return () => clearInterval(intervalId);
   }, [updateDangerLevel]);
 
   useEffect(() => {
+    const saveActivity = async () => {
+      if (!sessionId || !userId) return; // Don't save if session hasn't started or userId is not available
+
+      const activity = {
+        userId,
+        sessionId,
+        startTime: new Date().toISOString(),
+        userEngagement,
+        backgroundMusic,
+        callStatus,
+        movement,
+        soundLevel,
+        dangerLevel,
+      };
+      try {
+        // await axios.post('http://192.168.1.35:3000/activities', activity);
+        await axios.post('http://172.20.10.2:3000/activities', activity);
+
+        console.log('Activity saved to MongoDB');
+      } catch (error) {
+        console.error('Error saving activity:', error);
+      }
+    };
+
+    if (dangerLevel > 0) {
+      saveActivity();
+    }
+  }, [
+    sessionId,
+    userId,
+    dangerLevel,
+    userEngagement,
+    backgroundMusic,
+    callStatus,
+    movement,
+    soundLevel,
+  ]);
+
+  useEffect(() => {
     if (dangerLevel >= 0.5) {
       playHapticFeedback();
-    }
-    if (dangerLevel >= 0.5) {
       Alert.alert('Danger!', 'Too many tasks at the same time!');
     }
-    console.log('Current Danger Level:', dangerLevel); // Log the current danger level
   }, [dangerLevel, playHapticFeedback]);
 
   useEffect(() => {
@@ -89,27 +156,27 @@ const MonitoringScreen = () => {
     {
       label: 'Engagement',
       value: userEngagement ? maxWeights.userEngagement : 0,
-      color: 'rgba(255, 0, 0, 1)', // Distinct red
+      color: 'rgba(255, 0, 0, 1)',
     },
     {
       label: 'Music',
       value: backgroundMusic ? maxWeights.backgroundMusic : 0,
-      color: 'rgba(54, 162, 235, 1)', // Distinct blue
+      color: 'rgba(54, 162, 235, 1)',
     },
     {
       label: 'Call',
       value: callStatus ? maxWeights.callStatus : 0,
-      color: 'rgba(75, 192, 192, 1)', // Distinct green
+      color: 'rgba(75, 192, 192, 1)',
     },
     {
       label: 'Movement',
       value: movement * maxWeights.movement,
-      color: 'rgba(255, 206, 86, 1)', // Distinct yellow
+      color: 'rgba(255, 206, 86, 1)',
     },
     {
       label: 'Sound',
       value: soundLevel * maxWeights.sound,
-      color: 'rgba(153, 102, 255, 1)', // Distinct purple
+      color: 'rgba(153, 102, 255, 1)',
     },
   ];
 
@@ -118,6 +185,20 @@ const MonitoringScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Monitoring</Text>
+      <View style={styles.clocks}>
+        <AnalogueClock />
+        <DigitalClock />
+      </View>
+      <TouchableOpacity style={styles.startMontoringBtn}>
+        <Text style={styles.btnText} onPress={startMonitoring}>
+          Start Recording
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.stopMontoringBtn}>
+        <Text style={styles.btnText} onPress={stopMonitoring}>
+          Stop Recording
+        </Text>
+      </TouchableOpacity>
       <View style={styles.displayCard}>
         <UserEngagementDetectorTest setUserEngagement={setUserEngagement} />
         <BackgroundMusicComponentTest setBackgroundMusic={setBackgroundMusic} />
@@ -128,7 +209,7 @@ const MonitoringScreen = () => {
         <MovementComponentTest setMovement={setMovement} />
       </View>
       <Text style={[styles.dangerText, {marginBottom: 20}]}>
-        Danger Level: {(dangerLevel * 100).toFixed(2)}%
+        Hazard Level: {(dangerLevel * 100).toFixed(2)}%
       </Text>
       <View style={styles.chartContainer}>
         <Svg height="320" width={screenWidth - 20}>
@@ -144,7 +225,7 @@ const MonitoringScreen = () => {
               <SVGText
                 x={index * barWidth + (barWidth - 20) / 2 + 20}
                 y={320 - item.value * 300 - 10}
-                fill="black"
+                fill="#d3d3d3"
                 fontSize="14"
                 fontWeight="bold"
                 textAnchor="middle">
@@ -179,12 +260,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     height: '100%',
-    backgroundColor: '#f0f0f0', // Added background color for better readability
+    // backgroundColor: '#f0f0f0',
+    // backgroundColor: '#121212',
+    backgroundColor: '#1c1c1c',
   },
   displayCard: {
-    // borderWidth: 2,
-    // borderColor: '#000',
-    // borderRadius: 10,
     padding: 16,
   },
   twinCard: {
@@ -193,21 +273,23 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    textAlign: 'left',
+    textAlign: 'center',
     marginLeft: 16,
     marginBottom: 20,
     color: '#666666',
     fontWeight: 'bold',
   },
   dangerText: {
-    fontSize: 18,
-    color: 'red',
+    fontSize: 24,
+    color: '#ff4136',
     textAlign: 'center',
     marginTop: 20,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   chartContainer: {
     alignItems: 'center',
-    paddingHorizontal: 8, // Added padding to the container
+    paddingHorizontal: 8,
   },
   chart: {
     alignItems: 'center',
@@ -216,7 +298,7 @@ const styles = StyleSheet.create({
   },
   legendContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // Allow legend items to wrap to multiple lines
+    flexWrap: 'wrap',
     justifyContent: 'center',
     marginTop: 20,
   },
@@ -224,7 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 5,
-    marginVertical: 5, // Added vertical margin for better spacing
+    marginVertical: 5,
   },
   legendColor: {
     width: 20,
@@ -232,8 +314,30 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   legendLabel: {
-    fontSize: 12, // Smaller font size for better fit
-    color: '#333',
+    fontSize: 12,
+    color: 'white',
+    // color: '#333',
+  },
+  startMontoringBtn: {
+    backgroundColor: '#28a745',
+    marginBottom: 10,
+    borderRadius: 24,
+  },
+  stopMontoringBtn: {
+    backgroundColor: '#dc3545',
+    borderRadius: 24,
+  },
+  btnText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    padding: 10,
+    borderRadius: 5,
+  },
+  clocks: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
 });
 

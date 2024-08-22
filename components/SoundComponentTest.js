@@ -84,10 +84,10 @@ const SoundComponentTest = ({setSound}) => {
       </View>
       <View>
         <Text style={styles.secondaryText}>
-          Sound Detected: {soundLevel > soundThreshold ? 'Yes' : 'No'}
+          Sound Level: {soundLevel.toFixed(2)} dB
         </Text>
         <Text style={styles.primaryText}>
-          Sound Level: {soundLevel.toFixed(2)} dB
+          Sound Detected: {soundLevel > soundThreshold ? 'Yes' : 'No'}
         </Text>
       </View>
     </View>
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   primaryText: {
-    color: '#900', // Dark color for better visibility
+    // color: '#900', // Dark color for better visibility
+    color: 'white', // Dark color for better visibility
     fontSize: 14,
     textTransform: 'uppercase',
     fontWeight: 'bold',

@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   primaryText: {
-    color: '#900', // Dark color for better visibility
+    // color: '#900', // Dark color for better visibility
+    color: 'white', // Dark color for better visibility
     fontSize: 16,
     textTransform: 'uppercase',
     fontWeight: 'bold',

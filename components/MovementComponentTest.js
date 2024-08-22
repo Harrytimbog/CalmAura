@@ -126,14 +126,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   primaryText: {
-    color: '#900', // Dark color for better visibility
+    color: 'black', // Dark color for better visibility
     fontSize: 16,
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
 
   text: {
-    color: '#333', // Dark color for better visibility
+    // color: '#333', // Dark color for better visibility
+    color: 'white', // Dark color for better visibility
     fontSize: 16,
     // fontWeight: 'bold',
   },

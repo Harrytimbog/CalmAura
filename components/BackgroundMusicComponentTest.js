@@ -8,6 +8,7 @@ const {AudioFocusModule} = NativeModules;
 const BackgroundMusicComponentTest = ({setBackgroundMusic}) => {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
+  // Check if music is playing
   const checkIfMusicPlaying = useCallback(() => {
     AudioFocusModule.isAudioPlaying(isPlaying => {
       setIsMusicPlaying(isPlaying);
@@ -63,7 +64,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   primaryText: {
-    color: '#900', // Dark color for better visibility
+    // color: 'black', // Dark color for better visibility
+    color: 'white', // Dark color for better visibility
     fontSize: 16,
     textTransform: 'uppercase',
     fontWeight: 'bold',
