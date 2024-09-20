@@ -1,79 +1,42 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# CalmAura - A Mobile Application for Tracking Peripheral Interaction Metrics
 
-# Getting Started
+**CalmAura** is a mobile application designed to track and measure the metrics of reflex, reaction, and reflection during peripheral interactions. Using device sensors like the accelerometer and microphone, CalmAura responds to user movements and sounds, providing real-time feedback and visualizations. 
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+This project leverages Expo for a seamless development experience across iOS and Android platforms.
 
-## Step 1: Start the Metro Server
+## Table of Contents
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Setup and Installation](#setup-and-installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Features
+- **Real-Time Sensor Tracking**: Measures reflex, reaction, and reflection based on movement (accelerometer) and sound (microphone).
+- **Dynamic Visualization**: Displays metrics on a bar chart that updates in real time.
+- **Simulated Metrics**: Provides random simulation for reflection metrics to test functionality.
+- **Cross-Platform**: Built using React Native and Expo, compatible with both iOS and Android devices.
+- **Permissions Handling**: Requests necessary permissions for microphone access and sensor data collection.
 
-To start Metro, run the following command from the _root_ of your React Native project:
+## Technologies Used
+- **Frontend**: React Native, Expo
+- **Backend (future development)**: Node.js, Express, MongoDB
+- **Sensors**: Accelerometer, Gyroscope (via `expo-sensors`), Microphone (via `expo-av`)
+- **Data Visualization**: `react-native-chart-kit` for dynamic bar charts
+- **Mobile Development**: Expo for streamlined cross-platform development
 
-```bash
-# using npm
-npm start
+## Setup and Installation
 
-# OR using Yarn
-yarn start
-```
+### Prerequisites
+Before you begin, ensure you have the following installed:
+- Node.js and npm
+- Expo CLI (`npm install -g expo-cli`)
+- Expo Go (for testing on a mobile device)
 
-## Step 2: Start your Application
+### Steps
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Harrytimbog/CalmAura.git
+   cd CalmAura
